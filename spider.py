@@ -7,10 +7,12 @@ FilePath: \WangYi\spider.py
 '''
 from DataEncer import DataEncer
 import requests
+import threading
 
 
-class Spider():
+class Spider(threading.Thread):
     def __init__(self, song_id):
+        super().__init__()
         self.song_id = song_id
         self.data =  {
             "cursor": -1,
@@ -36,6 +38,9 @@ class Spider():
             if replies:
                 for reply in replies:
                     print('reply:' + reply['content'])
+
+    def run(self):
+        self.get_comments()
 
 
 if __name__ == '__main__':
