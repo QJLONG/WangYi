@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-17 11:05:20
+LastEditTime: 2023-03-17 16:32:07
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -12,6 +12,7 @@ import os
 import json
 from threading import Thread
 import time
+from tkinter import scrolledtext
 
 
 class Application():
@@ -21,18 +22,21 @@ class Application():
         win.title("网易云评论获取")
         win.resizable(0, 0)     # 固定窗口大小
         self.master = win
+        self.master.configure(bg='white')
+        self.songs_id = []
         self.add_header()
         self.add_search()
         self.add_song_info()
         # self.thread_it(self.song_info_refresh)
         self.thread_it(self.song_info_frame_refresh)
-        self.songs_id = []
+        self.add_comment()
+        self.thread_it(self.comments_refresh)
         win.mainloop()
     
     # 添加头部标签
     def add_header(self):
         self.header_lab = Label(self.master,  text="网易云音乐评论抓取程序",
-                                 font=('黑体', 25, "bold"), justify='center')
+                                 font=('黑体', 25, "bold"), bg='white', justify='center')
         self.header_lab.place(x=0, y=15, height=50, width=800)
 
     # 添加歌曲搜索部分
@@ -40,7 +44,7 @@ class Application():
         # 添加歌曲名搜索框
         self.song_name_var = StringVar()
         lab1 = Label(self.master, text="歌曲名:", justify="center",
-                     font=("黑体", 18))
+                     font=("黑体", 18), bg='white')
         lab1.place(x=50, y=100, width=90, height=30)
         entry1 = Entry(self.master, justify="center", font=("黑体", 18), textvariable=self.song_name_var)
         entry1.place(x=160, y=100, width=250, height=30)
@@ -48,7 +52,7 @@ class Application():
         # 添加歌手搜索框
         self.singer_name_var = StringVar()
         lab2 = Label(self.master, text="歌手名:", justify="center",
-                     font=("黑体", 18))
+                     font=("黑体", 18), bg='white')
         lab2.place(x=450, y=100, width=90, height=30)
         entry2 = Entry(self.master, justify="center", font=("黑体", 18), textvariable=self.singer_name_var)
         entry2.place(x=560, y=100, width=190, height=30)
@@ -59,11 +63,11 @@ class Application():
         # self.scroll = scrolledtext.ScrolledText(self.master, font=("黑体", 15))
         # self.scroll.place(x=50, y=175, width=500, height=175)
         self.song_info_frame = Frame(self.master ,bg='white')
-        self.song_info_frame.place(x=50, y=145, width=500, height=175)
+        self.song_info_frame.place(x=50, y=175, width=500, height=175)
         # 创建页面frame
         self.song_info_frames = []
         for i in range(4):
-            frame = Frame(self.song_info_frame, width=500, height=175, bg='white')
+            frame = Frame(self.song_info_frame, width=500, height=175, bg='#f2f2f3')
             self.song_info_frames.append(frame)
         self.song_info_frames[0].pack(fill=BOTH)
             
@@ -78,13 +82,13 @@ class Application():
         for i in range(4):
             btn = Button(self.master, text=str(i+1), width=3, height=1, bg='white')
             btn.bind('<ButtonPress-1>', self.switch_page)
-            btn.place(x=390+i*40, y=320, width=40, height=30) 
+            btn.place(x=390+i*40, y=145, width=40, height=30) 
             self.page_btns.append(btn)    
         self.page_btns[0]['bg'] = 'blue'
 
-        
         # 添加搜索按钮
-        search_btn = Button(self.master, text="查找歌曲", font=("黑体", 17), command= lambda: self.search_song(self.song_name_var.get(), self.singer_name_var.get()))
+        search_btn = Button(self.master, text="查找歌曲", font=("黑体", 17), bg='white', 
+                            command= lambda: self.search_song(self.song_name_var.get(), self.singer_name_var.get()))
         search_btn.place(x=560, y=175, width=200, height=50)
 
         # 添加歌曲ID输入框
@@ -93,8 +97,20 @@ class Application():
         entry.place(x=560, y=235, width=200, height=50)
 
         # 添加获取评论按钮
-        get_info_btn = Button(self.master, text="获取评论", font=("黑体", 18), command= lambda: self.get_comments(self.songs_id_var.get()))
+        get_info_btn = Button(self.master, text="获取评论", font=("黑体", 18), bg='white', 
+                              command = lambda: self.get_comments(self.songs_id_var.get()))
         get_info_btn.place(x=560, y=300, width=200, height=50)
+
+    # 添加歌曲评论部分
+    def add_comment(self):
+        # 添加评论显示框架：
+        self.commant_text = Text(self.master, font=("黑体", 16), bg='white')
+        self.commant_text.place(x=50, y=370, width=650, height=300)
+        # 为显示框架添加滚动条
+        scroll_bar = Scrollbar(command=self.commant_text.yview)
+        scroll_bar.pack(side=RIGHT, fill=Y)
+        self.commant_text.configure(yscrollcommand=scroll_bar.set)
+        
 
     # 设置刷新歌曲信息复选框
     def song_info_frame_refresh(self):
@@ -114,10 +130,9 @@ class Application():
                         btn = Checkbutton(self.song_info_frames[i//5], text=lab_str, font=("黑体", 17), bg='white') 
                         btn.bind("<ButtonPress-1>", self.click_check_button)
                         self.check_btns.append(btn)
-                        btn.pack(anchor="w", side=TOP)
+                        btn.pack(anchor="w", side=TOP, padx=15)
                         i += 1
                 os.remove("data/songs.tmp")
-
                 
 
     # 实现选页的效果
@@ -129,7 +144,6 @@ class Application():
         index = int(event.widget['text'])
         self.song_info_frames[index-1].pack(fill=BOTH)
         event.widget['bg'] = 'blue'
-
 
     # 搜索歌曲功能
     def search_song(self, song_name, singer_name):
@@ -156,14 +170,24 @@ class Application():
         for song_id in self.songs_id:
             spider = Spider(song_id)
             spider.start()
-            time.sleep(1) 
-
+            time.sleep(0.5)
+            
 
     # 将函数转换为子线程执行
     def thread_it(self, func, *args):
         t = Thread(target=func, args=args)
         t.setDaemon(True)
         t.start()
+
+    # 刷新评论显示区
+    def comments_refresh(self):
+        while True:
+            if os.path.exists("data/comments.tmp"):
+                print("检测到文件存在！")
+                with open("data/comments.tmp", "r", encoding='utf-8') as f:
+                    self.comments = f.read()
+                    self.commant_text.insert(1.0, self.comments)
+                os.remove("data/comments.tmp")
         
 
 if __name__ == '__main__':
