@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-22 17:34:40
+LastEditTime: 2023-03-22 18:47:52
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -32,7 +32,7 @@ class Application():
         self.thread_it(self.song_info_frame_refresh)
         self.add_comment()
         self.thread_it(self.comments_refresh)
-        
+
         win.mainloop()
 
     # 添加头部标签
@@ -110,7 +110,7 @@ class Application():
 
     # 添加歌曲评论部分
     def add_comment(self):
-        self.comment_frame = Frame(self.master, bg='green')
+        self.comment_frame = Frame(self.master, bg='#f2f2f3')
         self.comment_frame.place(x=50, y=370, width=650, height=300)
         self.comment_frames = []
         # 页数的刷新在self.click_check_button中实现
@@ -135,14 +135,10 @@ class Application():
         btn_previous.pack(side=RIGHT, anchor="se")
 
         # 添加评论显示框架：
-        # self.commant_text = Text(self.master, font=("黑体", 16), bg='white')
-        # self.commant_text.place(x=50, y=370, width=650, height=300)
-        # # 为显示框架添加滚动条
-        # scroll_bar = Scrollbar(command=self.commant_text.yview)
-        # scroll_bar.pack(side=RIGHT, fill=Y)
-        # self.commant_text.configure(yscrollcommand=scroll_bar.set)
+        self.comment_texts = []
 
     # 跳转到下一页功能实现
+
     def click_next_page(self):
         # for i in range(len(self.comment_frames)):
         #     if self.comment_frames[i][1] == True:
@@ -295,7 +291,7 @@ class Application():
         pages_num = len(self.songs_id)
         self.comment_frames.clear()
         for i in range(pages_num):
-            frame = Frame(self.comment_frame, bg='blue')
+            frame = Frame(self.comment_frame, bg='white')
             frame.pack_forget()
             # False表示当前页面没有被显示出来，方便后续页面跳转
             self.comment_frames.append([frame, False])
@@ -306,11 +302,8 @@ class Application():
     # 获取评论功能
     def get_comments(self, songs_id):
         self.songs_id = songs_id.split(",")
-        # print(self.songs_id)
-        for song_id in self.songs_id:
-            spider = Spider(song_id)
-            spider.start()
-            time.sleep(0.5)
+        spider = Spider(self.songs_id)
+        spider.start()
 
     # 将函数转换为子线程执行
 
@@ -323,12 +316,23 @@ class Application():
     def comments_refresh(self):
         while True:
             if os.path.exists("data/comments.tmp"):
-                print("检测到文件存在！")
+                # print("检测到文件存在！")
                 with open("data/comments.tmp", "r", encoding='utf-8') as f:
-                    self.comments = f.read()
-                    self.comment_text.insert(1.0, self.comments)
+                    content = f.read()
+                    self.comments = json.loads(content)
+                # 根据comments的数量创建文本框
+                index = 0
+                for song_id in self.songs_id:
+                    content = self.comments[song_id]
+                    text = Text(self.comment_frames[index][0], font=(
+                        "黑体", 14), bg='#f2f2f3')
+                    text.pack(expand=1, fill=BOTH)
+                    text.insert(1.0, "歌曲id: "+song_id+"\n")
+                    for line in content:
+                        text.insert(END, line)
+                    self.comment_texts.append(text)
+                    index += 1
                 os.remove("data/comments.tmp")
-        
 
 
 if __name__ == '__main__':

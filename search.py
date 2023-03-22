@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-13 17:49:20
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-16 15:30:53
+LastEditTime: 2023-03-22 18:15:15
 FilePath: \WangYi\search.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -66,6 +66,7 @@ class InfoSearcher(threading.Thread):
         
         # 将歌曲信息保存到本地
         infos = json.dumps(self.songs_info)
+        print(infos)
         if not os.path.exists("data"):
             os.makedirs("data")
         with open("data/songs.tmp", 'w', encoding='utf-8') as f:
