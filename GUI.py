@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-25 13:49:45
+LastEditTime: 2023-03-25 14:51:57
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -30,6 +30,7 @@ class Application():
         self.comment_texts = []
         self.comment_frames = []
         self.song_info_frames = []
+        self.add_menu_bar()
         self.add_header()
         self.add_search()
         self.add_song_info()
@@ -39,6 +40,20 @@ class Application():
         self.thread_it(self.comments_refresh)
 
         win.mainloop()
+
+    # 添加菜单栏
+    def add_menu_bar(self):
+        # 创建menubar
+        self.menu_bar = Menu(self.master, font=("黑体", 14))
+        self.master.configure(menu=self.menu_bar)
+        # 创建file菜单
+        self.file_menu = Menu(self.menu_bar, tearoff=0, font=("黑体", 10))
+        self.file_menu.add_command(label="保存到本地", command=self.save_to_local)
+        self.file_menu.add_separator()
+        self.file_menu.add_command(label="退出", command=self.master.quit)
+        # 将file菜单添加到menubar中
+        self.menu_bar.add_cascade(label="文件", menu=self.file_menu)
+        
 
     # 添加头部标签
     def add_header(self):
@@ -364,10 +379,12 @@ class Application():
                 for song_id in self.songs_id:
                     song_name = ""
                     # print(song_id)
+                    # 获取歌曲id和歌曲名
                     for info in self.songs_info:
                         if info['song_id'] == int(song_id):
                             song_name = info['song_name']
                             # print("song_name:", song_name)
+
                     content = self.comments[song_id]
                     text = scrolledtext.ScrolledText(self.comment_frames[index][0], font=(
                         "黑体", 14), bg='#f2f2f3')
@@ -405,13 +422,39 @@ class Application():
         self.check_boxs.clear()
         self.check_btns.clear()
         # 清空临时文件
-        os.removedirs('data')
+        ls = os.listdir("data")
+        for dir in ls:
+            dir = os.path.join("data", dir)
+            if os.path.isdir(dir):
+                continue
+            if dir.split(".")[-1] == 'tmp':
+                os.remove(dir)
         # 初始化页面页码
         self.comments_pages_var.set(1)
         for btn in self.page_btns:
             btn.configure(bg='white')
         self.page_btns[0].configure(bg='blue')
 
-
+    # 保存到本地功能
+    def save_to_local(self):
+        for song_id in self.songs_id:
+            content = self.comments[song_id]
+            # 获取歌曲名
+            song_name = ""
+            for info in self.songs_info:
+                if info['song_id'] == int(song_id):
+                    song_name = info['song_name']
+                    # print("song_name:", song_name)
+            # 将歌曲评论写入csv文件
+            if not os.path.exists('data/comments'):
+                os.mkdir('data/comments')
+            file_name = song_id + "_" + song_name + ".txt"
+            with open("data/comments/"+file_name, 'w', encoding='utf-8') as f:
+                for line in content:
+                    if line == "" or line =="\n":
+                        continue
+                    f.write(line)
+        messagebox.showinfo("消息", "成功保存到:data/comments")
+                
 if __name__ == '__main__':
     app = Application()
