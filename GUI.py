@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-23 15:00:09
+LastEditTime: 2023-03-25 13:28:32
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -71,6 +71,7 @@ class Application():
         # 添加歌曲信息框
         self.song_info_frame = Frame(self.master, bg='white')
         self.song_info_frame.place(x=50, y=175, width=500, height=175)
+        
         # 创建页面frame
         self.song_info_frames = []
         for i in range(4):
@@ -256,7 +257,7 @@ class Application():
                         box = BooleanVar()
                         self.check_boxs.append(box)
                         btn = Checkbutton(
-                            self.song_info_frames[i//5], text=lab_str, font=("黑体", 17), bg='#f2f2f3', variable=self.check_boxs[i])
+                            self.song_info_frames[i//5], text=lab_str, font=("黑体", 16), bg='#f2f2f3', variable=self.check_boxs[i])
                         btn.bind("<ButtonPress-1>", self.click_check_button)
                         self.check_btns.append(btn)
                         btn.pack(anchor="w", side=TOP, padx=15)
@@ -385,7 +386,7 @@ class Application():
 
     # 初始化GUI界面和所有资源
     def gui_init(self):
-        # 清空现有的checkbutton
+        # 清空现有的checkbutton``
         for frame in self.song_info_frames:
             self.clear_frame(frame)
         # 清空评论frame上的所有组件
