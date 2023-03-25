@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-25 14:51:57
+LastEditTime: 2023-03-25 15:49:50
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -11,9 +11,9 @@ from spider import Spider
 import os
 import json
 from threading import Thread
-import time
 from tkinter import scrolledtext
 from tkinter import messagebox
+import re
 
 class Application():
     def __init__(self):
@@ -53,6 +53,12 @@ class Application():
         self.file_menu.add_command(label="退出", command=self.master.quit)
         # 将file菜单添加到menubar中
         self.menu_bar.add_cascade(label="文件", menu=self.file_menu)
+        
+        # 创建热词分析菜单
+        self.analyze_menu = Menu(self.menu_bar, tearoff=0)
+        self.analyze_menu.add_command(label="热词设置", command=self.hot_key_setting)
+        # 将热词分析菜单添加到menubar中
+        self.menu_bar.add_cascade(label="热词分析", menu=self.analyze_menu)
         
 
     # 添加头部标签
@@ -455,6 +461,29 @@ class Application():
                         continue
                     f.write(line)
         messagebox.showinfo("消息", "成功保存到:data/comments")
+
+    # 热词设置功能
+    def hot_key_setting(self):
+        self.hot_key_window = Toplevel(self.master)
+        self.hot_key_window.geometry("400x200+750+400")
+        # 添加热词输入框
+        Label(self.hot_key_window, text="请输入热词,英文逗号隔开：", font=('黑体', 16), justify="center").pack()
+        self.hot_key_var = StringVar()
+        self.hot_key_text = Text(self.hot_key_window, font=("黑体", 16),  width=35, height=5)
+        self.hot_key_text.pack(pady=10)
+        # 确定按钮
+        Button(self.hot_key_window, text="确定", font=("黑体", 16), command=self.hot_key_confirm).place(x=120, y=160, width=50, height=30)
+        Button(self.hot_key_window, text="取消", font=("黑体", 16), command=self.hot_key_window.destroy).place(x=230, y=160, width=50, height=30)
+
+    def hot_key_confirm(self):
+        content = self.hot_key_text.get(0.0, END)
+        content = content.strip()
+        content = content.strip(",")
+        self.hot_keys = re.sub(r"\s+", "", content).split(',')
+        self.hot_key_window.destroy()
+        messagebox.showinfo("消息", "热词设置成功！")
+        print(self.hot_keys)
+
                 
 if __name__ == '__main__':
     app = Application()
