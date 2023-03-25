@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-22 18:20:22
+LastEditTime: 2023-03-23 10:30:12
 FilePath: \WangYi\spider.py
 '''
 from DataEncer import DataEncer
@@ -13,7 +13,7 @@ import json
 
 
 class Spider(threading.Thread):
-    def __init__(self, songs_id=["32507038"], num=20):
+    def __init__(self, songs_id=["32507038"], num=100):
         super().__init__()
         self.songs_id = songs_id
         self.data =  {
@@ -43,7 +43,8 @@ class Spider(threading.Thread):
             replies = comment['beReplied']
             if replies:
                 for reply in replies:
-                    result.append('  reply:' + reply['content'] + "\n")
+                    result.append('reply:' + reply['content'] + "\n")
+            result.append("\n")
         return result
 
     def run(self):

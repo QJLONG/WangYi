@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-22 18:47:52
+LastEditTime: 2023-03-23 15:00:09
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -15,7 +15,6 @@ import time
 from tkinter import scrolledtext
 from tkinter import messagebox
 
-
 class Application():
     def __init__(self):
         win = Tk()
@@ -24,7 +23,13 @@ class Application():
         win.resizable(0, 0)     # 固定窗口大小
         self.master = win
         self.master.configure(bg='white')
+
         self.songs_id = []
+        self.check_boxs = []
+        self.check_btns = []
+        self.comment_texts = []
+        self.comment_frames = []
+        self.song_info_frames = []
         self.add_header()
         self.add_search()
         self.add_song_info()
@@ -61,11 +66,9 @@ class Application():
             "黑体", 18), textvariable=self.singer_name_var)
         entry2.place(x=560, y=100, width=190, height=30)
 
-    # 添加歌曲信息部分
+    # 添加歌曲信息部分，创建4个frame页面
     def add_song_info(self):
         # 添加歌曲信息框
-        # self.scroll = scrolledtext.ScrolledText(self.master, font=("黑体", 15))
-        # self.scroll.place(x=50, y=175, width=500, height=175)
         self.song_info_frame = Frame(self.master, bg='white')
         self.song_info_frame.place(x=50, y=175, width=500, height=175)
         # 创建页面frame
@@ -92,7 +95,16 @@ class Application():
             self.page_btns.append(btn)
         self.page_btns[0]['bg'] = 'blue'
 
-        # 添加搜索按钮
+        # 添加评论数量输入框
+        Label(self.master, text='获取评论的条数：', font=('黑体', 16), bg='white').place(x=50, y=145, width=180, height=30)
+        self.comment_num_var = IntVar()
+        self.comment_num_var.set(100)
+        Entry(self.master, font=('黑体', 16), textvariable=self.comment_num_var).place(x=240, y=145, width=80, height=30)
+
+        # 添加全选按钮
+        Button(self.master, text='全选', font=('黑体', 16), bg='white', command=self.all_select).place(x=330, y=145, width=50, height=30)
+
+        # 添加查找歌曲按钮按钮
         search_btn = Button(self.master, text="查找歌曲", font=("黑体", 17), bg='white',
                             command=lambda: self.search_song(self.song_name_var.get(), self.singer_name_var.get()))
         search_btn.place(x=560, y=175, width=200, height=50)
@@ -111,34 +123,29 @@ class Application():
     # 添加歌曲评论部分
     def add_comment(self):
         self.comment_frame = Frame(self.master, bg='#f2f2f3')
-        self.comment_frame.place(x=50, y=370, width=650, height=300)
-        self.comment_frames = []
+        self.comment_frame.place(x=50, y=370, width=700, height=400)
         # 页数的刷新在self.click_check_button中实现
 
         # 添加评论展示部分翻页按钮
         # 下一页
-        btn_next = Button(self.comment_frame, text="下一页",
+        btn_next = Button(self.master, text="下一页",
                           command=self.click_next_page)
-        btn_next.pack(side=RIGHT, anchor="se")
+        btn_next.place(x=700, y=770, width=50, height=25)
         # 选页跳转部分
-        btn_jump = Button(self.comment_frame, text="跳转",
+        btn_jump = Button(self.master, text="跳转",
                           command=self.page_jump)
-        btn_jump.pack(side=RIGHT, anchor='se')
+        btn_jump.place(x=650, y=770, width=50, height=25)
         self.comments_pages_var = IntVar()
-        page_num_entry = Entry(self.comment_frame, font=(
+        page_num_entry = Entry(self.master, font=(
             "黑体", 20), width=2, justify=CENTER, textvariable=self.comments_pages_var)
-        page_num_entry.pack(side=RIGHT, anchor='se')
+        page_num_entry.place(x=600, y=770, width=50, height=25)
         self.comments_pages_var.set(1)
         # 上一页
-        btn_previous = Button(self.comment_frame, text="上一页",
+        btn_previous = Button(self.master, text="上一页",
                               command=self.click_previous_page)
-        btn_previous.pack(side=RIGHT, anchor="se")
-
-        # 添加评论显示框架：
-        self.comment_texts = []
+        btn_previous.place(x=550, y=770, width=50, height=25)
 
     # 跳转到下一页功能实现
-
     def click_next_page(self):
         # for i in range(len(self.comment_frames)):
         #     if self.comment_frames[i][1] == True:
@@ -173,7 +180,6 @@ class Application():
             self.comments_pages_var.set(1)
 
     # 跳转到上一页功能实现
-
     def click_previous_page(self):
         # for i in range(len(self.comment_frames)):
         #     if self.comment_frames[i][1] == True:
@@ -208,7 +214,6 @@ class Application():
             self.comments_pages_var.set(1)
 
     # 评论显示区页面跳转功能
-
     def page_jump(self):
         cur_page = self.comments_pages_var.get()
         index = cur_page - 1
@@ -234,8 +239,7 @@ class Application():
         except IOError as e:
             print(e)
 
-    # 设置刷新歌曲信息复选框
-
+    # 设置刷新歌曲信息复选框 创建20个checkbutton，添加到self.song_info_frames中
     def song_info_frame_refresh(self):
         while True:
             if os.path.exists('data/songs.tmp'):
@@ -248,18 +252,18 @@ class Application():
                     for info in self.songs_info:
                         lab_str = str(
                             i+1) + " " + str(info['song_id']) + " " + info['song_name']
-                        print(lab_str)
+                        # print(lab_str)
                         box = BooleanVar()
                         self.check_boxs.append(box)
                         btn = Checkbutton(
-                            self.song_info_frames[i//5], text=lab_str, font=("黑体", 17), bg='white', variable=self.check_boxs[i])
+                            self.song_info_frames[i//5], text=lab_str, font=("黑体", 17), bg='#f2f2f3', variable=self.check_boxs[i])
                         btn.bind("<ButtonPress-1>", self.click_check_button)
                         self.check_btns.append(btn)
                         btn.pack(anchor="w", side=TOP, padx=15)
                         i += 1
                 os.remove("data/songs.tmp")
 
-    # 实现歌曲信息区域选页的效果
+    # 实现歌曲信息区域选页的效果  func -> self.page_btns[]
     def switch_page(self, event):
         for frame in self.song_info_frames:
             frame.pack_forget()
@@ -269,12 +273,13 @@ class Application():
         self.song_info_frames[index-1].pack(fill=BOTH)
         event.widget['bg'] = 'blue'
 
-    # 搜索歌曲功能
+    # 搜索歌曲功能 func -> search_btn
     def search_song(self, song_name, singer_name):
+        self.gui_init()
         info_searcher = InfoSearcher(song_name, singer_name)
         info_searcher.start()
 
-    # 点击复选按钮功能
+    # 点击复选按钮功能 点击的同时添加评论frame  func -> self.check_btns[]
     def click_check_button(self, event):
         btn_index = int(event.widget['text'].split()[0]) - 1
         song_id = event.widget['text'].split()[1]
@@ -288,25 +293,58 @@ class Application():
         self.songs_id_var.set(",".join(self.songs_id))
 
         # 点击checkbutton的同时刷新评论frame的页数
-        pages_num = len(self.songs_id)
+        for frame in self.comment_frames:
+            frame[0].destroy()
         self.comment_frames.clear()
+        self.comments_pages_var.set(1)
+        pages_num = len(self.songs_id)
         for i in range(pages_num):
-            frame = Frame(self.comment_frame, bg='white')
+            frame = Frame(self.comment_frame, bg='#f2f2f3')
             frame.pack_forget()
             # False表示当前页面没有被显示出来，方便后续页面跳转
             self.comment_frames.append([frame, False])
         # 显示出第一个frame
-        self.comment_frames[0][0].pack(expand=1, fill=BOTH)
-        self.comment_frames[0][1] = True
+        if self.comment_frames:
+            self.comment_frames[0][0].pack(expand=1, fill=BOTH)
+            self.comment_frames[0][1] = True
 
-    # 获取评论功能
+    # 全选功能
+    def all_select(self):
+        # 更新self.songs_id
+        self.songs_id.clear()
+        for info in self.songs_info:
+            self.songs_id.append(str(info['song_id']))
+        self.songs_id_var.set(",".join(self.songs_id))
+        # check_boxs全部设置为true
+        for btn in self.check_btns:
+            btn.select()
+        # 刷新评论frame的页数
+        for frame in self.comment_frames:
+            frame[0].destroy()
+        self.comment_frames.clear()
+        self.comments_pages_var.set(1)
+        pages_num = len(self.songs_id)
+        for i in range(pages_num):
+            frame = Frame(self.comment_frame, bg='#f2f2f3')
+            frame.pack_forget()
+            # False表示当前页面没有被显示出来，方便后续页面跳转
+            self.comment_frames.append([frame, False])
+        # 显示出第一个frame
+        if self.comment_frames:
+            self.comment_frames[0][0].pack(expand=1, fill=BOTH)
+            self.comment_frames[0][1] = True
+        
+
+    
+    # 获取评论功能  func -> get_info_btn
     def get_comments(self, songs_id):
+        # 清楚已经被绑定的text
+        self.comment_texts.clear()
         self.songs_id = songs_id.split(",")
-        spider = Spider(self.songs_id)
+        spider = Spider(self.songs_id, num=int(self.comment_num_var.get()))
         spider.start()
 
     # 将函数转换为子线程执行
-
     def thread_it(self, func, *args):
         t = Thread(target=func, args=args)
         t.setDaemon(True)
@@ -324,15 +362,48 @@ class Application():
                 index = 0
                 for song_id in self.songs_id:
                     content = self.comments[song_id]
-                    text = Text(self.comment_frames[index][0], font=(
+                    text = scrolledtext.ScrolledText(self.comment_frames[index][0], font=(
                         "黑体", 14), bg='#f2f2f3')
-                    text.pack(expand=1, fill=BOTH)
+                    text.pack(side=LEFT,fill=Y, expand=1)
                     text.insert(1.0, "歌曲id: "+song_id+"\n")
                     for line in content:
                         text.insert(END, line)
+
+                    # # 添加滚动条
+                    # scroll = Scrollbar(self.comment_frames[index][0], command=text.yview)
+                    # scroll.pack(side=RIGHT, fill=Y)
+                    # text.config(yscrollcommand=scroll.set)
+                    
                     self.comment_texts.append(text)
                     index += 1
                 os.remove("data/comments.tmp")
+
+    # 清空frame中的所有组件
+    def clear_frame(self, frame):
+        for widget in frame.winfo_children():
+            widget.destroy()
+
+    # 初始化GUI界面和所有资源
+    def gui_init(self):
+        # 清空现有的checkbutton
+        for frame in self.song_info_frames:
+            self.clear_frame(frame)
+        # 清空评论frame上的所有组件
+        for frame in self.comment_frames:
+            frame[0].destroy()
+        # 重置变量
+        self.songs_id.clear()
+        self.comment_texts.clear()
+        self.comment_frames.clear()
+        self.check_boxs.clear()
+        self.check_btns.clear()
+        # 清空临时文件
+        os.removedirs('data')
+        # 初始化页面页码
+        self.comments_pages_var.set(1)
+        for btn in self.page_btns:
+            btn.configure(bg='white')
+        self.page_btns[0].configure(bg='blue')
 
 
 if __name__ == '__main__':

@@ -66,12 +66,12 @@ class InfoSearcher(threading.Thread):
         
         # 将歌曲信息保存到本地
         infos = json.dumps(self.songs_info)
-        print(infos)
+        # print(infos)
         if not os.path.exists("data"):
             os.makedirs("data")
         with open("data/songs.tmp", 'w', encoding='utf-8') as f:
             f.write(infos)
-        print("【*】 成功将歌曲信息保存到本地！")
+        # print("【*】 成功将歌曲信息保存到本地！")
     
     def run(self):
         self.get_info()
