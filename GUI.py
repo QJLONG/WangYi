@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-25 13:28:32
+LastEditTime: 2023-03-25 13:49:45
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -362,11 +362,17 @@ class Application():
                 # 根据comments的数量创建文本框
                 index = 0
                 for song_id in self.songs_id:
+                    song_name = ""
+                    # print(song_id)
+                    for info in self.songs_info:
+                        if info['song_id'] == int(song_id):
+                            song_name = info['song_name']
+                            # print("song_name:", song_name)
                     content = self.comments[song_id]
                     text = scrolledtext.ScrolledText(self.comment_frames[index][0], font=(
                         "黑体", 14), bg='#f2f2f3')
                     text.pack(side=LEFT,fill=Y, expand=1)
-                    text.insert(1.0, "歌曲id: "+song_id+"\n")
+                    text.insert(1.0, "歌曲id: "+song_id+ "        歌曲名:" + song_name +"\n\n")
                     for line in content:
                         text.insert(END, line)
 
