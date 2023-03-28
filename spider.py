@@ -49,10 +49,13 @@ class Spider(threading.Thread):
 
     def run(self):
         comments = {}
+        i=1
         for id in self.songs_id:
+            print("正在获取第%d首歌曲评论" % i)
             self.data['rid'] = f"R_SO_4_{id}"
             self.data['threadId'] = f"R_SO_4_{id}"
             comments[id] = self.get_comments()
+            i += 1
 
         # 将评论组成的字典转为json字符串并保存到本地
         comment_json = json.dumps(comments)

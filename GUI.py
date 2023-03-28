@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-25 15:49:50
+LastEditTime: 2023-03-28 16:52:34
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -13,7 +13,7 @@ import json
 from threading import Thread
 from tkinter import scrolledtext
 from tkinter import messagebox
-import re
+from hotkey import HotKey
 
 class Application():
     def __init__(self):
@@ -30,6 +30,7 @@ class Application():
         self.comment_texts = []
         self.comment_frames = []
         self.song_info_frames = []
+        self.hot_key = HotKey(self.master)
         self.add_menu_bar()
         self.add_header()
         self.add_search()
@@ -38,7 +39,7 @@ class Application():
         self.thread_it(self.song_info_frame_refresh)
         self.add_comment()
         self.thread_it(self.comments_refresh)
-
+        
         win.mainloop()
 
     # 添加菜单栏
@@ -56,7 +57,10 @@ class Application():
         
         # 创建热词分析菜单
         self.analyze_menu = Menu(self.menu_bar, tearoff=0)
-        self.analyze_menu.add_command(label="热词设置", command=self.hot_key_setting)
+        self.analyze_menu.add_command(label="热词导入", command=self.hot_key.hot_key_import)
+        self.analyze_menu.add_command(label="热词导出", command=self.hot_key.hot_key_export)
+        self.analyze_menu.add_command(label="热词设置", command=self.hot_key.hot_key_setting)
+        self.analyze_menu.add_command(label="热词统计", command=self.hot_key.hot_key_stat)
         # 将热词分析菜单添加到menubar中
         self.menu_bar.add_cascade(label="热词分析", menu=self.analyze_menu)
         
@@ -137,7 +141,7 @@ class Application():
             "黑体", 18, "bold"), textvariable=self.songs_id_var)
         entry.place(x=560, y=235, width=200, height=50)
 
-        # 添加获取评论按钮
+        # 添加获取评论按钮  
         get_info_btn = Button(self.master, text="获取评论", font=("黑体", 18), bg='white',
                               command=lambda: self.get_comments(self.songs_id_var.get()))
         get_info_btn.place(x=560, y=300, width=200, height=50)
@@ -462,28 +466,6 @@ class Application():
                     f.write(line)
         messagebox.showinfo("消息", "成功保存到:data/comments")
 
-    # 热词设置功能
-    def hot_key_setting(self):
-        self.hot_key_window = Toplevel(self.master)
-        self.hot_key_window.geometry("400x200+750+400")
-        # 添加热词输入框
-        Label(self.hot_key_window, text="请输入热词,英文逗号隔开：", font=('黑体', 16), justify="center").pack()
-        self.hot_key_var = StringVar()
-        self.hot_key_text = Text(self.hot_key_window, font=("黑体", 16),  width=35, height=5)
-        self.hot_key_text.pack(pady=10)
-        # 确定按钮
-        Button(self.hot_key_window, text="确定", font=("黑体", 16), command=self.hot_key_confirm).place(x=120, y=160, width=50, height=30)
-        Button(self.hot_key_window, text="取消", font=("黑体", 16), command=self.hot_key_window.destroy).place(x=230, y=160, width=50, height=30)
-
-    def hot_key_confirm(self):
-        content = self.hot_key_text.get(0.0, END)
-        content = content.strip()
-        content = content.strip(",")
-        self.hot_keys = re.sub(r"\s+", "", content).split(',')
-        self.hot_key_window.destroy()
-        messagebox.showinfo("消息", "热词设置成功！")
-        print(self.hot_keys)
-
-                
+        
 if __name__ == '__main__':
     app = Application()
