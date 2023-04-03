@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-04-03 17:24:37
+LastEditTime: 2023-04-03 17:33:46
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -487,7 +487,7 @@ class Application():
                 if info['song_id'] == int(song_id):
                     song_name = info['song_name']
             # 对歌曲评论进行分词
-            content = ",".join(content).replace("reply:")
+            content = ",".join(content).replace("reply:", "")
             words = jieba.lcut(content)
             new_words = "".join(words)
             word_cloud = WordCloud(font_path="font/msyh.ttc").generate(new_words)
