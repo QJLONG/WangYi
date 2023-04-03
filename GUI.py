@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-28 16:52:34
+LastEditTime: 2023-04-03 17:24:37
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -14,6 +14,8 @@ from threading import Thread
 from tkinter import scrolledtext
 from tkinter import messagebox
 from hotkey import HotKey
+from wordcloud import WordCloud
+import jieba
 
 class Application():
     def __init__(self):
@@ -63,7 +65,12 @@ class Application():
         self.analyze_menu.add_command(label="热词统计", command=self.hot_key.hot_key_stat)
         # 将热词分析菜单添加到menubar中
         self.menu_bar.add_cascade(label="热词分析", menu=self.analyze_menu)
-        
+
+        # 创建生成词云菜单
+        self.wordcloud_menu = Menu(self.menu_bar, tearoff=0)
+        self.wordcloud_menu.add_command(label="生成词云", command=self.create_word_cloud)
+        # 将生成词云菜单添加到menubar中
+        self.menu_bar.add_cascade(label="生成词云", menu=self.wordcloud_menu) 
 
     # 添加头部标签
     def add_header(self):
@@ -466,6 +473,27 @@ class Application():
                     f.write(line)
         messagebox.showinfo("消息", "成功保存到:data/comments")
 
+    # 生成词云
+    def create_word_cloud(self):
+        # 判断文件夹是否存在
+        if not os.path.exists("data/word_clouds"):
+            os.mkdir("data/word_clouds")
+        # 获取歌曲评论
+        for song_id in self.songs_id:
+            content = self.comments[song_id]
+            # 获取歌曲名
+            song_name = ""
+            for info in self.songs_info:
+                if info['song_id'] == int(song_id):
+                    song_name = info['song_name']
+            # 对歌曲评论进行分词
+            content = ",".join(content).replace("reply:")
+            words = jieba.lcut(content)
+            new_words = "".join(words)
+            word_cloud = WordCloud(font_path="font/msyh.ttc").generate(new_words)
+            word_cloud.to_file("data/word_clouds/" + song_name + ".png")
+
+            
         
 if __name__ == '__main__':
     app = Application()
