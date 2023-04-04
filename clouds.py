@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-04-04 10:11:21
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-04-04 11:38:55
+LastEditTime: 2023-04-04 15:34:02
 FilePath: \WangYi\wordcloud.py
 '''
 from wordcloud import WordCloud
@@ -33,12 +33,13 @@ class CreateWL:
                     line = line.replace("#", "")
                     if not line:
                         continue
-                    words = jieba.lcut(line)
+                    words = jieba.lcut(line, cut_all=True)
                     # print(words)
+                    # print("-----------------------------------------------------")
                     self.words += words
-            print(file_name)
+            # print(file_name)
         print("共识别%d个词语"%len(self.words))
-        words_str = "".join(self.words)
+        words_str = " ".join(self.words)
         word_cloud = WordCloud(font_path="font/msyh.ttc",scale=10).generate(words_str)
         time = datetime.datetime.now()
         time = time.strftime("%m_%d_%H_%M_%S")
