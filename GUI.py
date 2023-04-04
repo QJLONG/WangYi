@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-04-04 10:58:14
+LastEditTime: 2023-04-04 16:10:09
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -478,8 +478,11 @@ class Application():
                     f.write(line)
         messagebox.showinfo("消息", "成功保存到:data/comments")
 
-    # 生成词云
+    # 生成词云(已选中歌曲)
     def create_word_cloud(self):
+        # 获取停用词列表
+        with open("stopwords/cn_stopwords.txt", 'r', encoding='utf-8') as f:
+            stopword_list = [word.strip("\n") for word in f.readlines()]
         # 判断文件夹是否存在
         if not os.path.exists("data/word_clouds"):
             os.mkdir("data/word_clouds")
@@ -493,12 +496,17 @@ class Application():
                     song_name = info['song_name']
             # 对歌曲评论进行分词
             content = ",".join(content).replace("reply:", "")
+            # print(content)
             words = jieba.lcut(content)
-            new_words = "".join(words)
-            word_cloud = WordCloud(font_path="font/msyh.ttc").generate(new_words)
+            new_words = []
+            for word in words:
+                if word not in stopword_list:
+                    new_words.append(word)
+            new_words = " ".join(new_words)
+            word_cloud = WordCloud(font_path="font/msyh.ttc", scale=10).generate(new_words)
             word_cloud.to_file("data/word_clouds/" + song_name + ".png")
+            messagebox.showinfo("消息", "已成功生成词云:"+"data/word_clouds/"+song_name+".png")
 
             
-        
 if __name__ == '__main__':
     app = Application()
