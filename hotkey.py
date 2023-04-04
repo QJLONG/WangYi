@@ -2,9 +2,8 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-28 15:22:16
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-03-28 16:59:38
+LastEditTime: 2023-04-04 10:05:41
 FilePath: \WangYi\hotkey.py
-Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 from tkinter import *
 from tkinter import messagebox
@@ -63,6 +62,11 @@ class HotKey(Frame):
         plt.xlable=("热词")
         plt.ylabel=("出现的数量")
         plt.title('热词统计分析')
+        keys = list(self.keys_dic.keys())
+        values = list(self.keys_dic.values())
+        # print(keys, values)
+        for i in range(len(self.keys_dic)):
+            plt.text(keys[i], values[i] + 1, str(values[i]), horizontalalignment="center")
         plt.show()
         
 
@@ -96,5 +100,6 @@ class HotKey(Frame):
 if __name__ == '__main__':
     tk = Tk()
     hot_key = HotKey(tk)
-    hot_key.hot_key_import()
-    hot_key.hot_key_export()
+    hot_key.hot_key_stat()
+    # hot_key.hot_key_import()
+    # hot_key.hot_key_export()

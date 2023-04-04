@@ -2,7 +2,7 @@
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
 LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-04-03 17:33:46
+LastEditTime: 2023-04-04 10:58:14
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -16,6 +16,7 @@ from tkinter import messagebox
 from hotkey import HotKey
 from wordcloud import WordCloud
 import jieba
+import clouds
 
 class Application():
     def __init__(self):
@@ -25,6 +26,7 @@ class Application():
         win.resizable(0, 0)     # 固定窗口大小
         self.master = win
         self.master.configure(bg='white')
+        self.clouds = clouds.CreateWL()
 
         self.songs_id = []
         self.check_boxs = []
@@ -42,6 +44,7 @@ class Application():
         self.add_comment()
         self.thread_it(self.comments_refresh)
         
+        
         win.mainloop()
 
     # 添加菜单栏
@@ -58,7 +61,7 @@ class Application():
         self.menu_bar.add_cascade(label="文件", menu=self.file_menu)
         
         # 创建热词分析菜单
-        self.analyze_menu = Menu(self.menu_bar, tearoff=0)
+        self.analyze_menu = Menu(self.menu_bar, tearoff=0, font=("黑体", 10))
         self.analyze_menu.add_command(label="热词导入", command=self.hot_key.hot_key_import)
         self.analyze_menu.add_command(label="热词导出", command=self.hot_key.hot_key_export)
         self.analyze_menu.add_command(label="热词设置", command=self.hot_key.hot_key_setting)
@@ -67,8 +70,10 @@ class Application():
         self.menu_bar.add_cascade(label="热词分析", menu=self.analyze_menu)
 
         # 创建生成词云菜单
-        self.wordcloud_menu = Menu(self.menu_bar, tearoff=0)
-        self.wordcloud_menu.add_command(label="生成词云", command=self.create_word_cloud)
+        self.wordcloud_menu = Menu(self.menu_bar, tearoff=0, font=("黑体", 10))
+        self.wordcloud_menu.add_command(label="生成词云(已选中歌曲)", command=self.create_word_cloud)
+        self.wordcloud_menu.add_command(label="生成词云(从本地选择文件)", command=self.clouds.create_cloud)
+
         # 将生成词云菜单添加到menubar中
         self.menu_bar.add_cascade(label="生成词云", menu=self.wordcloud_menu) 
 
