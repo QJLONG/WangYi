@@ -1,8 +1,8 @@
 '''
 Author: Hummer hzlqjmct@163.com
 Date: 2023-03-07 23:31:49
-LastEditors: Hummer hzlqjmct@163.com
-LastEditTime: 2023-04-04 16:10:09
+LastEditors: hummer
+LastEditTime: 2023-04-12 09:46:57
 FilePath: \WangYi\GUI.py
 '''
 from tkinter import *
@@ -294,7 +294,8 @@ class Application():
                         box = BooleanVar()
                         self.check_boxs.append(box)
                         btn = Checkbutton(
-                            self.song_info_frames[i//5], text=lab_str, font=("黑体", 16), bg='#f2f2f3', variable=self.check_boxs[i])
+                            self.song_info_frames[i//5], text=lab_str, font=("黑体", 16), bg='#f2f2f3',\
+                              variable=self.check_boxs[i])
                         btn.bind("<ButtonPress-1>", self.click_check_button)
                         self.check_btns.append(btn)
                         btn.pack(anchor="w", side=TOP, padx=15)
@@ -306,7 +307,7 @@ class Application():
         for frame in self.song_info_frames:
             frame.pack_forget()
         for btn in self.page_btns:
-            btn['bg'] = 'white'
+            btn['bg'] = 'white' 
         index = int(event.widget['text'])
         self.song_info_frames[index-1].pack(fill=BOTH)
         event.widget['bg'] = 'blue'
@@ -321,7 +322,7 @@ class Application():
     def click_check_button(self, event):
         btn_index = int(event.widget['text'].split()[0]) - 1
         song_id = event.widget['text'].split()[1]
-        # 判断如果按未被选中，则将其添加到songs_id中
+        # 判断如果按钮未被选中，则将其添加到songs_id中
         if not self.check_boxs[btn_index].get():
             self.songs_id.append(song_id)
         # 如果按钮已经被选中了，则将其从songs_id中删除
@@ -411,7 +412,7 @@ class Application():
                     text = scrolledtext.ScrolledText(self.comment_frames[index][0], font=(
                         "黑体", 14), bg='#f2f2f3')
                     text.pack(side=LEFT,fill=Y, expand=1)
-                    text.insert(1.0, "歌曲id: "+song_id+ "        歌曲名:" + song_name +"\n\n")
+                    text.insert(1.0, "歌曲id: "+song_id+ "歌曲名:" + song_name +"\n\n")
                     for line in content:
                         text.insert(END, line)
 

@@ -13,7 +13,7 @@ import json
 
 
 class Spider(threading.Thread):
-    def __init__(self, songs_id=["32507038"], num=100):
+    def __init__(self, songs_id=["28059417"], num=100):
         super().__init__()
         self.songs_id = songs_id
         self.data =  {
@@ -56,7 +56,8 @@ class Spider(threading.Thread):
             self.data['threadId'] = f"R_SO_4_{id}"
             comments[id] = self.get_comments()
             i += 1
-
+        
+        print("comments:", comments)
         # 将评论组成的字典转为json字符串并保存到本地
         comment_json = json.dumps(comments)
         if not os.path.exists('data'):
@@ -68,5 +69,5 @@ class Spider(threading.Thread):
 
 
 if __name__ == '__main__':
-    s = Spider(["32507038", "415792881"])
+    s = Spider(["28059417", "415792881"])
     s.start()
